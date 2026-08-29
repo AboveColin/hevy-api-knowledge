@@ -28,9 +28,12 @@ it needs the detail.
 - `skills/hevy/references/api-internal.md` is the app's own API, reverse-engineered
   from Android client traffic on version 2.5.11. It is the only route to the feed,
   likes, comments, follows and subscription state.
-- `skills/hevy/references/workflows.md` is seven recipes: caching templates,
-  incremental sync, estimated 1RM, weekly set volume per muscle group, stall
-  detection, generating a routine from history, and recovery-aware scheduling.
+- `skills/hevy/references/workflows.md` is seven mechanical recipes: caching
+  templates, incremental sync, estimated 1RM, weekly set volume per muscle group,
+  stall detection, generating a routine from history, and recovery-aware scheduling.
+- `skills/hevy/references/coaching.md` is seven workflows that produce coaching
+  output: workout review, weekly summary, exercise progression, deload check,
+  four-week programme design written back as routines, and two social ones.
 
 ## Two APIs
 
