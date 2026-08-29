@@ -111,6 +111,15 @@ the internal API.
 Each names its calls and its sections. Two of them also record the mistake the
 obvious implementation makes, because both are easy to ship and hard to notice.
 
+## Scheduling
+
+A routine has no date. Only a workout carries time, and a workout means a session
+that happened, so an agent that plans training holds the calendar itself. Keep fixed
+slot routines and PUT new prescriptions into them, store the schedule in your own
+store, and join plan to reality through `routine_id`, which every logged workout
+carries. `references/workflows.md` section 8 has the mechanisms and the one thing
+not to do.
+
 ## No deletes
 
 The API has no DELETE on any path. Nothing it creates can be removed through it, so

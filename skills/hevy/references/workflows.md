@@ -130,3 +130,67 @@ than a fixed split, because it looks principled.
 
 Hevy gives you the input for free: dated sets, resolved to muscle groups through the
 template cache.
+
+## 8. Scheduling, when the API has no dates
+
+A routine has no date field, only a workout does, and a workout means a session that
+happened. So an agent that plans training has to hold the calendar itself and use
+Hevy for content. Four mechanisms, in the order worth reaching for.
+
+### Fixed slot routines, overwritten in place
+
+Create the routines once, one per slot in the athlete's week, and from then on `PUT`
+new prescriptions into the same ids. `Upper A`, `Lower A`, `Upper B` stay put while
+their contents change weekly.
+
+This is the right default for anything recurring. Routine ids stay stable, so your
+own store can reference them. The athlete's folder never grows. And it sidesteps the
+missing DELETE, which is what makes the create-a-new-one-each-week approach turn
+into a folder the athlete has to clear by hand.
+
+Two constraints when you set this up. `PUT` has no `folder_id`, so the folder is
+fixed at creation. And `POST` does not accept `index`, so the order routines appear
+in is the server's choice, not yours.
+
+### Keep the schedule in your own store
+
+One row per planned session: date, `routine_id`, and whatever reasoning produced it.
+Hevy holds the exercises and the loads. You hold when.
+
+This costs a table and buys everything the API will not do: rescheduling, a plan
+further out than the routines you have slots for, and a record of what you intended
+versus what you wrote.
+
+### Close the loop with `routine_id` on the workout
+
+A logged workout carries `routine_id`, the routine it was started from. That is the
+join between what you planned and what the athlete did.
+
+After a planned date passes, look for a workout whose `routine_id` matches the slot
+and whose `start_time` falls on or near that date. Found means the session ran, and
+its sets tell you at what loads. Nothing found means it was skipped, which is the
+input a deload check or a next-week plan actually needs.
+
+`/v1/workouts/events?since=` carries the full workout on every `updated` event, so
+`routine_id` arrives there too. Adherence can run off the same incremental sync as
+everything else rather than needing its own crawl.
+
+### Date in the title, as a label only
+
+The app itself does this. A routine created through the phone on 15 February went up
+titled `15-feb`.
+
+If you write dates into titles, use `YYYY-MM-DD` at the front so the strings sort in
+calendar order. Treat the title as a label for the human, never as your source of
+truth: an athlete renaming a routine in the app silently breaks any logic that
+parses it. The same goes for stashing a marker in `notes`, which is fine for
+explaining the plan to the athlete and unfit for anything you parse back.
+
+### Do not fake a calendar entry with a future workout
+
+`POST /v1/workouts` accepts `start_time`, so a future-dated workout looks like an
+easy scheduled session. It is not. Hevy records it as a completed session, so it
+lands in volume totals, PR detection, streaks and every analytic downstream. There
+is no DELETE, so you cannot take it back, and the athlete has to clean it up
+themselves. A plan lives in a routine or in your own store, never in the training
+log.
