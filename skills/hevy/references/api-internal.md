@@ -176,8 +176,8 @@ Returns the authenticated user's full account details.
   "comment_mention_push_enabled": true,
   "comment_discussion_push_enabled": true,
   "private_profile": false,
-  "created_at": "2024-01-01T18:09:19.597Z",
-  "last_workout_at": "2024-01-01T06:12:03.641Z",
+  "created_at": "2024-01-15T18:30:00.000Z",
+  "last_workout_at": "2024-01-15T18:30:00.000Z",
   "accepted_terms_and_conditions": true,
   "is_coached": false,
   "is_a_coach": false,
@@ -253,8 +253,8 @@ Returns a public profile view for any user.
   ],
   "weekly_workout_durations": [
     {
-      "week_start_date": "2025-11-24T00:00:00+00:00",
-      "week_end_date": "2025-12-01T00:00:00+00:00",
+      "week_start_date": "2024-01-15T18:30:00.000Z",
+      "week_end_date": "2024-01-15T18:30:00.000Z",
       "total_seconds": 15353
     }
   ],
@@ -597,10 +597,10 @@ Syncs routines between client and server. Same batch sync pattern as workouts.
 **Request Body:**
 ```json
 {
-  "f3f5be80-bc03-4389-a5e2-03843d971baf": "2023-04-09T23:43:35.063Z",
-  "033e4046-dc42-439f-a4a3-dd99f6b20565": "2023-03-21T18:23:54.988Z",
-  "5cd35d50-aaae-475c-a108-0a6c2b7393c7": "2025-09-18T19:57:21.049Z",
-  "routines_updated_at": "2025-09-18T19:57:21.049Z"
+  "f3f5be80-bc03-4389-a5e2-03843d971baf": "2024-01-15T18:30:00.000Z",
+  "033e4046-dc42-439f-a4a3-dd99f6b20565": "2024-01-15T18:30:00.000Z",
+  "5cd35d50-aaae-475c-a108-0a6c2b7393c7": "2024-01-15T18:30:00.000Z",
+  "routines_updated_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 
@@ -610,7 +610,7 @@ Syncs routines between client and server. Same batch sync pattern as workouts.
   "updated": [],
   "deleted": [],
   "isMore": false,
-  "updated_at": "2025-09-18T19:57:21.049Z"
+  "updated_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 
@@ -959,7 +959,7 @@ Reports the current network type to the server.
       { "bpm": 92, "timestamp_ms": 1770873590000 }
     ]
   },
-  "created_at": "2024-01-01T06:12:03.182Z",
+  "created_at": "2024-01-15T18:30:00.000Z",
   "image_urls": [],
   "is_private": false,
   "like_count": 2,
@@ -1124,7 +1124,7 @@ Reports the current network type to the server.
   "username": "friend_three",
   "verified": false,
   "full_name": "Example Name",
-  "created_at": "2024-01-01T08:06:40.422Z",
+  "created_at": "2024-01-15T18:30:00.000Z",
   "like_count": 0,
   "profile_pic": "https://...",
   "is_liked_by_user": false,
@@ -1343,7 +1343,7 @@ Fetches a single routine by its UUID. Returns the routine wrapped in a `{"routin
     "username": "example_user",
     "profile_pic": "https://...",
     "exercises": [/* full exercise objects with sets */],
-    "updated_at": "2025-09-18T19:57:21.049Z",
+    "updated_at": "2024-01-15T18:30:00.000Z",
     "parent_routine_id": null
   }
 }
@@ -1392,13 +1392,13 @@ Returns a key-value store of user-specific app settings and state. Used by the c
 **Response Body:**
 ```json
 {
-  "UPDATED_AT": "2025-12-07T18:46:21.012Z",
+  "UPDATED_AT": "2024-01-15T18:30:00.000Z",
   "SetCompleteVolume": "off",
   "HIDE_HEVY_COACH_LAUNCH_FEED_CELL": true,
   "EXERCISE_DETAIL_IS_SET_RECORDS_EXPANDED": true,
   "HAS_DISMISSED_CALENDAR_MULTI_YEAR_CELL": true,
-  "NOTIFICATION_STORE_LAST_NOTIFICATION_RECEIVED": "2025-11-19T09:30:22.275Z",
-  "NOTIFICATION_STORE_LAST_READ": "2025-12-03T12:36:13.797Z",
+  "NOTIFICATION_STORE_LAST_NOTIFICATION_RECEIVED": "2024-01-15T18:30:00.000Z",
+  "NOTIFICATION_STORE_LAST_READ": "2024-01-15T18:30:00.000Z",
   "HAS_DISMISSED_MONTHLY_REPORT_CELL_11_2025": true,
   "MonthlyReportPushEnabled": true
 }
