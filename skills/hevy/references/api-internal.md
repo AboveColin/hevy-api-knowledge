@@ -8,6 +8,18 @@
 
 > This documentation is reverse-engineered from observed API traffic of the Hevy workout tracking app (Android client). It covers the internal/private API, not the official public API.
 
+**Provenance.** Every endpoint below came from captured traffic except seven, which
+came from a client library and have no capture behind them: `GET /users/search`,
+`GET /users/{username}`, `GET /followers/{username}`, `GET /following/{username}`,
+`GET /workout_likes/{id}`, `GET /workout_comments/{id}` and `GET /routine/{id}`.
+Treat those seven as unverified. The shapes are probably right and nobody has
+watched them on the wire.
+
+**The app also talks to two third parties.** Subscription entitlements come from
+RevenueCat, not from Hevy, so `GET /user_subscription` is Hevy's own mirror of that
+state rather than the source. Attribution events go to Adjust. Neither is part of
+the Hevy API and neither is documented here.
+
 ---
 
 ## Table of Contents
@@ -613,6 +625,90 @@ Syncs routines between client and server. Same batch sync pattern as workouts.
   "updated_at": "2024-01-15T18:30:00.000Z"
 }
 ```
+
+### POST `/routine`
+
+Creates a routine. The client generates the id, sends it as both `clientId` and
+`_unsyncedObjectId`, and the server echoes it back as `routineId`. So the id is
+known before the request goes out, which is how the app writes offline and
+reconciles later.
+
+**Authentication:** Required
+**Status:** `200 OK`
+
+**Request Body:**
+```json
+{"routine": {
+  "title": "Upper A",
+  "folder_id": null,
+  "index": -1,
+  "program_id": null,
+  "notes": null,
+  "clientId": "9f2a4c71-0000-4000-a000-000000000001",
+  "_unsyncedObjectId": "9f2a4c71-0000-4000-a000-000000000001",
+  "exercises": [{
+    "exercise_template_id": "79D0BB3A",
+    "notes": "",
+    "rest_seconds": 150,
+    "sets": [
+      {"index": 0, "indicator": "normal", "weight_kg": 68, "reps": 12},
+      {"index": 1, "indicator": "normal", "weight_kg": 52, "reps": 5}
+    ]
+  }]
+}}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Routine name |
+| `folder_id` | string \| null | Routine folder to file it under |
+| `index` | int | Sort position. `-1` puts it at the end |
+| `program_id` | string \| null | Coaching program this belongs to |
+| `clientId` | string (UUID) | Client-generated routine id, returned as `routineId` |
+| `_unsyncedObjectId` | string (UUID) | Same value as `clientId` |
+| `exercises[].rest_seconds` | int | Rest timer for that exercise |
+| `exercises[].sets[].index` | int | Zero-based position within the exercise |
+| `exercises[].sets[].indicator` | string | `normal`, `warmup`, `failure`, `dropset` |
+
+**Response Body:**
+```json
+{"routineId": "9f2a4c71-0000-4000-a000-000000000001"}
+```
+
+An exercise with no target load still needs one set. The app sends
+`{"index": 0, "indicator": "normal", "weight_kg": 0}` with no `reps` for
+bodyweight and untargeted exercises.
+
+**This is not the v1 shape.** The public API calls the same field `type` where
+this calls it `indicator`, takes `rep_range` where this takes nothing, and needs
+no `index` because array order carries it. Payloads do not transfer between the
+two.
+
+---
+
+### POST `/body_measurements_batch`
+
+Writes one or more body measurements in a single call. Same client-generated id
+pattern as routines.
+
+**Authentication:** Required
+**Status:** `200 OK`
+
+**Request Body:**
+```json
+{"measurementsBatch": [{
+  "date": "2024-01-15",
+  "weight_kg": 72,
+  "lean_mass_kg": 65,
+  "fat_percent": 15,
+  "_unsyncedObjectId": "9f2a4c71-0000-4000-a000-000000000002"
+}]}
+```
+
+`date` is `YYYY-MM-DD`. Every measurement field is optional, so a weigh-in can
+send `weight_kg` alone.
+
+---
 
 ### GET `/routine_folders`
 
