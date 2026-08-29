@@ -68,7 +68,7 @@ Authenticates a user with email/username and password. Returns session tokens.
   "user_id": "ec55f0ba-b60d-4da7-a0d7-fa75572e2d2d",
   "access_token": "<redacted>",
   "refresh_token": "<redacted>",
-  "expires_at": "2026-02-15T14:33:50.370Z"
+  "expires_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 
@@ -99,7 +99,7 @@ Refreshes an expired access token using a refresh token.
 {
   "access_token": "<redacted>",
   "refresh_token": "<redacted>",
-  "expires_at": "2026-02-15T13:46:03.229Z"
+  "expires_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 
@@ -439,7 +439,7 @@ Updates an existing workout (v2 API).
             "type": "normal",
             "weight_kg": 70,
             "reps": 13,
-            "completed_at": "2026-02-15T05:23:10.644Z"
+            "completed_at": "2024-01-15T18:30:00.000Z"
           }
         ]
       }
@@ -501,9 +501,9 @@ Syncs workouts between client and server. Used on app startup to detect changes.
 A JSON object mapping workout UUIDs to their `updated_at` timestamps, plus a `workouts_updated_at` field:
 ```json
 {
-  "bb849d24-5500-4b50-aa0e-abdffac7ac63": "2026-02-14T10:50:56.959Z",
-  "664dfb2a-e05e-4b5d-af0c-c0ad8a4ebf57": "2026-02-14T16:00:24.889Z",
-  "workouts_updated_at": "2026-02-14T16:00:24.889Z"
+  "bb849d24-5500-4b50-aa0e-abdffac7ac63": "2024-01-15T18:30:00.000Z",
+  "664dfb2a-e05e-4b5d-af0c-c0ad8a4ebf57": "2024-01-15T18:30:00.000Z",
+  "workouts_updated_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 
@@ -513,7 +513,7 @@ A JSON object mapping workout UUIDs to their `updated_at` timestamps, plus a `wo
   "updated": [/* array of full Workout objects that have been modified */],
   "deleted": [/* array of deleted workout IDs */],
   "isMore": false,
-  "updated_at": "2026-02-15T10:27:36.137Z"
+  "updated_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 
@@ -747,7 +747,7 @@ Returns the authenticated user's notifications.
     "type": "workout-like",
     "from_username": "friend_five",
     "profile_pic": "https://...",
-    "date": "2026-02-15T10:27:36.263Z",
+    "date": "2024-01-15T18:30:00.000Z",
     "workout_id": "ec55f0ba-...",
     "workout_title": "Grwm"
   },
@@ -756,7 +756,7 @@ Returns the authenticated user's notifications.
     "type": "workout-comment",
     "from_username": "friend_three",
     "profile_pic": "https://...",
-    "date": "2026-02-12T08:06:40.698Z",
+    "date": "2024-01-15T18:30:00.000Z",
     "workout_id": "ec55f0ba-...",
     "workout_title": "Ff wakker worden",
     "comment": "Goeiemorgen"
@@ -766,7 +766,7 @@ Returns the authenticated user's notifications.
     "type": "accept-follow-request",
     "from_username": "jeronedepatser",
     "profile_pic": "https://...",
-    "date": "2026-02-09T19:51:15.867Z"
+    "date": "2024-01-15T18:30:00.000Z"
   }
 ]
 ```
@@ -965,7 +965,7 @@ Reports the current network type to the server.
   "like_count": 2,
   "routine_id": "ec55f0ba-...",
   "start_time": 1771132981,
-  "updated_at": "2026-02-15T10:27:36.137Z",
+  "updated_at": "2024-01-15T18:30:00.000Z",
   "apple_watch": false,
   "description": "",
   "like_images": ["https://..."],
@@ -1090,7 +1090,7 @@ Reports the current network type to the server.
   "index": 0,
   "indicator": "normal",
   "weight_kg": 70,
-  "completed_at": "2026-02-15T05:23:10.644Z",
+  "completed_at": "2024-01-15T18:30:00.000Z",
   "custom_metric": null,
   "distance_meters": null,
   "personalRecords": [],
@@ -1233,7 +1233,7 @@ Re-authenticates using a saved userId + secret pair (device-stored credentials).
   "user_id": "ec55f0ba-b60d-4da7-a0d7-fa75572e2d2d",
   "access_token": "<redacted>",
   "refresh_token": "<redacted>",
-  "expires_at": "2026-02-15T14:00:18.987Z"
+  "expires_at": "2024-01-15T18:30:00.000Z"
 }
 ```
 

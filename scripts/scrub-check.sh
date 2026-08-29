@@ -16,6 +16,24 @@ check() {
   fail=1
 }
 
+# Any username in the references must be one of the placeholders. Checking the
+# shape catches every real handle, and unlike naming one, it does not publish
+# the value it exists to keep out.
+bad_users=$(grep -rhoE '"username": *"[^"]*"' skills/ \
+  | grep -vE '"username": *"(example_user|friend_[a-z]+)"' || true)
+if [ -n "$bad_users" ]; then
+  echo "BLOCKED: non-placeholder username"
+  printf '%s\n' "$bad_users" | head -5
+  fail=1
+fi
+
+bad_names=$(grep -rhoE '"full_name": *"[A-Z][a-z]+ [A-Za-z ]+"' skills/ \
+  | grep -v '"full_name": *"Example Name"' || true)
+if [ -n "$bad_names" ]; then
+  echo "BLOCKED: real name in full_name"
+  printf '%s\n' "$bad_names" | head -5
+  fail=1
+fi
 check "bearer token"            'Bearer [A-Za-z0-9+/=_-]{16,}'
 check "auth-token header value" 'auth-token: *[0-9a-f]{8}-'
 check "live access token"       '"(access_token|refresh_token|secret)": *"[A-Za-z0-9+/=_-]{16,}"'
