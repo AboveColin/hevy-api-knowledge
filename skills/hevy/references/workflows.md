@@ -12,10 +12,11 @@ Nothing else gives you that mapping.
 GET /v1/exercise_templates?page=N&pageSize=100   until page >= page_count
 ```
 
-Store `id`, `title`, `type`, `primary_muscle_group`, `secondary_muscle_groups`,
-`equipment`, `is_custom`. Refresh on a schedule rather than per request, because the
-built-in list moves rarely and the user's custom templates only change when they add
-one.
+Store `id`, `title`, `type`, `primary_muscle_group`, `secondary_muscle_groups` and
+`is_custom`. Those six are what the spec documents. Some clients also read an
+`equipment` field that the spec does not list, so treat it as optional and never key
+anything on it. Refresh on a schedule rather than per request, because the built-in
+list moves rarely and a user's custom templates change only when they add one.
 
 Match on `id`, never on `title`. Two templates can share a title across equipment
 variants, and a user renaming a custom exercise breaks a title join silently.
@@ -45,7 +46,10 @@ match their workout.
 
 ## 3. Progression and estimated 1RM
 
-From `/v1/exercise_history/{templateId}`, group sets by date.
+From `/v1/exercise_history/{templateId}`, group sets into sessions. The response is
+one entry per set with no date field, so group on `workout_id`, or on the date part
+of `workout_start_time` if you want calendar days. The set type is `set_type` here,
+not `type`.
 
 - Estimated 1RM, Epley: `weight_kg * (1 + reps / 30)`. Use the best single set of the
   session. Averaging across sets buries the top set under the back-offs.
@@ -53,7 +57,8 @@ From `/v1/exercise_history/{templateId}`, group sets by date.
 - Top set: the highest `weight_kg` at the session's highest reps for that weight.
 
 Exclude warmup sets from volume and from the 1RM estimate. They are marked
-`type: "warmup"` and including them inflates both.
+`set_type: "warmup"` on this endpoint and `type: "warmup"` everywhere else, and
+including them inflates both numbers.
 
 Epley drifts high above roughly 10 reps. If the athlete trains in high rep ranges,
 say so alongside the number rather than presenting it as a measurement.
@@ -100,8 +105,10 @@ The full path from history to something the athlete can press start on.
 4. Build the routine body. Warmup sets get `type: "warmup"`, working sets get
    `type: "normal"` plus a `rep_range`. Set `rest_seconds` per exercise, longer for
    compounds.
-5. `POST /v1/routines`, or `PUT /v1/routines/{id}` to overwrite last week's copy so
-   the athlete's folder does not fill up with near-identical routines.
+5. `POST /v1/routines`, or `PUT /v1/routines/{id}` to overwrite last week's copy.
+   Prefer the PUT. The API has no DELETE, so every POST is permanent and a weekly
+   generator buries the athlete in near-identical routines they have to clear by
+   hand. The PUT body has no `folder_id`, so pick the folder at creation.
 
 Two rules worth holding to. Never prescribe a weight for an exercise with no history,
 leave it null and let the athlete fill it in. And write the reasoning into the
