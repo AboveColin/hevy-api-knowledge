@@ -86,6 +86,11 @@ Then write each day into Hevy with `POST /v1/routines`, one routine per day, gro
 in a folder created with `POST /v1/routine_folders`. Rest defaults of 150 seconds for
 compounds and 90 for isolation are a reasonable start.
 
+Set the folder at creation, because the update body has no `folder_id` and the API
+has no DELETE. Rerunning this workflow every week should PUT over the existing
+routines, not POST new ones, or the athlete accumulates a folder of near-duplicates
+that only they can clear.
+
 Remember the routine payload rules. Sets take `type` and `rep_range`, never `rpe`,
 and `rest_seconds` sits on the exercise. Put the reasoning in the routine `notes`.
 

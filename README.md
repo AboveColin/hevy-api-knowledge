@@ -22,12 +22,16 @@ it needs the detail.
 
 - `skills/hevy/SKILL.md` gives the orientation and the four mistakes that break most
   first attempts.
-- `skills/hevy/references/api-v1.md` is the documented Pro API: every endpoint,
-  the routine and workout bodies, the fixed muscle group and equipment vocabularies,
-  and the pagination limits.
-- `skills/hevy/references/api-internal.md` is the app's own API, reverse-engineered
-  from Android client traffic on version 2.5.11. It is the only route to the feed,
-  likes, comments, follows and subscription state.
+- `skills/hevy/references/api-v1.md` is the documented Pro API, checked field by
+  field against Hevy's OpenAPI spec: all 14 paths, the workout, routine, template,
+  history and body-measurement shapes, the three closed vocabularies, the per-endpoint
+  pagination caps, and the naming traps that make a response fail to round-trip into
+  a request.
+- `skills/hevy/references/api-internal.md` is the app's own API, 60 endpoints
+  reverse-engineered from Android client traffic on version 2.5.11. It is the only
+  route to the feed, likes, comments, follows and subscription state. Endpoints
+  taken from a client library rather than from captured traffic are marked
+  unverified.
 - `skills/hevy/references/workflows.md` is seven mechanical recipes: caching
   templates, incremental sync, estimated 1RM, weekly set volume per muscle group,
   stall detection, generating a routine from history, and recovery-aware scheduling.

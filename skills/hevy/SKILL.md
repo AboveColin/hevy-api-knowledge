@@ -23,22 +23,26 @@ Start with v1. Reach for the internal API only when v1 has no equivalent.
 
 ## The four facts that break first attempts
 
-`pageSize` maxes at **10** on `/v1/workouts`, `/v1/routines` and
-`/v1/routine_folders`, and at **100** on `/v1/exercise_templates`. Pulling a year
-of workouts is a long paginated crawl. Caching every exercise template is a handful
-of calls.
+`pageSize` maxes at **10** everywhere except `/v1/exercise_templates`, which allows
+**100**. Going over returns 400 `Invalid page size` rather than clamping. Pulling a
+year of workouts is a long crawl. Caching every exercise template is a handful of
+calls.
 
 **Routine sets and workout sets are different objects.** A routine set takes
 `rep_range: {start, end}` and its exercise takes `rest_seconds`. A workout set takes
 `rpe` from the fixed ladder 6, 7, 7.5, 8, 8.5, 9, 9.5, 10. Sending `rpe` to a routine
 or `rep_range` to a workout is the most common first error.
 
-**Incremental sync goes through `/v1/workouts/events?since=`**, which reports updates
-and deletions. Diffing full pages of `/v1/workouts` misses deletes entirely.
+**Incremental sync goes through `/v1/workouts/events?since=`**, which returns
+`{"type": "updated", "workout": {...}}` and `{"type": "deleted", "id", "deleted_at"}`.
+Diffing full pages of `/v1/workouts` misses deletes entirely.
 
-**`GET /v1/routines/{id}` wraps its result** in `{"routine": {...}}`. The list
-endpoint does not wrap. Same for a few other single-resource reads, so check the
-shape rather than assuming.
+**`GET /v1/routines/{id}` wraps its result** in `{"routine": {...}}` where the list
+endpoint does not. Two more naming traps in the same family: a workout response calls
+the superset field `supersets_id` while the request calls it `superset_id`, and
+`/v1/exercise_history` calls the set type `set_type` where everything else calls it
+`type`. Round-tripping a response into a request loses the superset grouping and
+does not error.
 
 ## Writing a routine
 
@@ -70,8 +74,14 @@ to null. `exercise_template_id` must come from `/v1/exercise_templates`, so cach
 list before you build anything. Custom templates the user created appear in the same
 list with `is_custom: true`.
 
+`POST /v1/routines` returns 201, or 403 when the account cannot hold another
+routine. `folder_id` is a number, and null files it under the default My Routines
+folder.
+
 `PUT /v1/routines/{id}` replaces the routine wholesale. There is no per-exercise
-patch, so read, modify, and send the whole thing back.
+patch, so read, modify, and send the whole thing back. Its body takes only `title`,
+`notes` and `exercises`, with **no `folder_id`**, so the API can place a routine in
+a folder at creation and can never move it afterwards.
 
 ## Planning a session from history
 
@@ -81,7 +91,8 @@ patch, so read, modify, and send the whole thing back.
    muscle group, secondary muscle groups and equipment. Every planning decision needs
    that mapping.
 2. Read `/v1/exercise_history/{templateId}` for the exercises you are considering.
-   That gives dated sets with weight and reps.
+   It returns one entry per set, not per session, with no date field. Group on
+   `workout_id` or on the date part of `workout_start_time`.
 3. Estimate a one-rep max per session. Epley is `weight * (1 + reps / 30)`. Take the
    best set of the session, not the average.
 4. Decide the next prescription from the trend, then write it as a routine.
@@ -99,6 +110,12 @@ the internal API.
 
 Each names its calls and its sections. Two of them also record the mistake the
 obvious implementation makes, because both are easy to ship and hard to notice.
+
+## No deletes
+
+The API has no DELETE on any path. Nothing it creates can be removed through it, so
+a script that writes a routine per day fills the user's folder until they clear it
+by hand. Overwrite one routine with PUT instead of creating a new one each time.
 
 ## Rate limits
 
