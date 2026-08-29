@@ -208,7 +208,7 @@ POST /v1/routines
 Returns **201**. `folder_id` is a number, and null files the routine in the default
 My Routines folder. A 403 comes back when the account cannot hold another routine.
 
-Differences from a workout, and the source of most 400s:
+Differences from a workout **on the request**, and the source of most 400s:
 
 | | Routine set | Workout set |
 |---|---|---|
@@ -216,6 +216,24 @@ Differences from a workout, and the source of most 400s:
 | `rpe` | no | yes |
 | `rest_seconds` | on the exercise | not present |
 | timing | none | `start_time`, `end_time` |
+
+A routine read back carries both `rep_range` and `rpe`, so the response is wider than
+what the create and update bodies accept. Sending a routine response back unchanged
+fails on `rpe`.
+
+### No scheduling
+
+A routine has no date. The create body takes `title`, `folder_id`, `notes` and
+`exercises`, the update body drops `folder_id`, and the response adds only `id`,
+`index`, `created_at` and `updated_at`. Nothing in either API attaches a routine to a
+day, so a routine is a template and never a calendar entry. Only a workout carries
+time, through `start_time` and `end_time`, and that records a session that happened.
+
+The internal API has a `program_id` on its routine create, which points at Hevy's
+coaching programs. It is null in every observed request and no program endpoint
+appears in the public spec or in any capture, so there is no API route to
+scheduling. Convention is to put the date in the routine title, which is what the
+app itself does.
 
 ### Updating
 
