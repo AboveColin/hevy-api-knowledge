@@ -1,6 +1,6 @@
 ---
 name: hevy
-description: Read and write Hevy workout data. Use when building against the Hevy API, planning or generating a routine from training history, computing progression or e1RM from logged sets, syncing workouts into another system, or debugging a Hevy request that returns the wrong shape.
+description: Read and write Hevy workout data. Use when building against the Hevy API, planning or generating a routine from training history, reviewing a workout or a training week, checking for a plateau or a needed deload, computing progression or e1RM from logged sets, syncing workouts into another system, or debugging a Hevy request that returns the wrong shape.
 ---
 
 # Hevy
@@ -88,6 +88,17 @@ patch, so read, modify, and send the whole thing back.
 
 Set weights from the athlete's own numbers. A routine full of round numbers that
 ignore their history is worse than no routine.
+
+## Coaching output
+
+`references/coaching.md` has seven workflows that produce something for a person to
+read rather than a data structure: reviewing one workout, summarising a week,
+tracking one lift's progression, deciding whether a deload is due, designing a
+four-week programme and writing it back as routines, and two social ones that need
+the internal API.
+
+Each names its calls and its sections. Two of them also record the mistake the
+obvious implementation makes, because both are easy to ship and hard to notice.
 
 ## Rate limits
 
