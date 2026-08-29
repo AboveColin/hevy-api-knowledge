@@ -32,9 +32,10 @@ it needs the detail.
   route to the feed, likes, comments, follows and subscription state. Endpoints
   taken from a client library rather than from captured traffic are marked
   unverified.
-- `skills/hevy/references/workflows.md` is seven mechanical recipes: caching
+- `skills/hevy/references/workflows.md` is eight mechanical recipes: caching
   templates, incremental sync, estimated 1RM, weekly set volume per muscle group,
-  stall detection, generating a routine from history, and recovery-aware scheduling.
+  stall detection, generating a routine from history, recovery-aware scheduling, and
+  how to schedule at all when the API has no date field.
 - `skills/hevy/references/coaching.md` is seven workflows that produce coaching
   output: workout review, weekly summary, exercise progression, deload check,
   four-week programme design written back as routines, and two social ones.

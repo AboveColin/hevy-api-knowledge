@@ -235,6 +235,10 @@ appears in the public spec or in any capture, so there is no API route to
 scheduling. Convention is to put the date in the routine title, which is what the
 app itself does.
 
+For what to build instead, see `workflows.md` section 8. The short version: keep
+fixed slot routines and PUT into them, hold the calendar in your own store, and join
+plan to reality through `routine_id` on the logged workout.
+
 ### Updating
 
 `PUT /v1/routines/{id}` replaces the whole routine and returns 200. Its body accepts
