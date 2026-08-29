@@ -42,6 +42,10 @@ check "live access token"       '"(access_token|refresh_token|secret)": *"[A-Za-
 # does not publish the value it exists to keep out.
 check "app API key literal"     'x-api-key.*[a-z]{4,}_[a-z]{4,}_[a-z]{3,}'
 check "profile image CDN path"  'cloudfront\.net/profile-images'
+
+# Captured payloads carry the account's own activity times. Every example
+# timestamp is normalised to 2024, so anything outside it is a fresh paste.
+check "un-normalised timestamp"  '20(1[0-9]|2[0-35-9])-[01][0-9]-[0-3][0-9]T'
 check "real email"              '[a-z0-9._%+-]+@(gmail|hotmail|outlook|icloud|proton|yahoo)\.'
 
 if [ "$fail" -ne 0 ]; then
