@@ -28,7 +28,7 @@ it needs the detail.
   pagination caps, and the naming traps that make a response fail to round-trip into
   a request.
 - `skills/hevy/references/api-internal.md` is the app's own API, 60 endpoints
-  reverse-engineered from Android client traffic on version 2.5.11. It is the only
+  reverse-engineered from Android client traffic, current to version 3.1.11. It is the only
   route to the feed, likes, comments, follows and subscription state. Endpoints
   taken from a client library rather than from captured traffic are marked
   unverified.
