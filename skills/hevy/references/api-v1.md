@@ -30,6 +30,12 @@ may change or the project may be dropped.
 There is no DELETE anywhere in the API. Nothing created through it can be removed
 through it.
 
+**Workout location is not in v1.** The Hevy app added gym and location tagging on
+workouts in build 3.1.11 (gym_id, place_id, latitude, longitude). The v1 public API
+does not expose any of it: the live OpenAPI spec has no gym, place or coordinate
+field on the workout schema, and no gym path. It is an internal-API feature so far.
+See `api-internal.md`, "Added in 3.x".
+
 ### Pagination
 
 Every paginated response is `{"page": n, "page_count": n, "<collection>": [...]}`.

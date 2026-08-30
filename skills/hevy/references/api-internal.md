@@ -4,7 +4,11 @@
 **Protocol:** HTTPS
 **Server:** Heroku (Express.js)
 **Content-Type:** `application/json; charset=utf-8`
-**Observed App Version:** 2.5.11 (Build 1885982, Android)
+**Observed App Version:** 3.1.11 (Build 3265149, Android), diffed against 2.5.11.
+The 2.x endpoint and payload shapes below still hold in 3.1.11. The 3.x additions
+(gyms and workout location, Hevy Trainer v3, a linked-session auth call) are listed
+in the "Added in 3.x" section near the end. All 3.x items come from the Hermes
+string table, so paths are observed and methods are unverified.
 
 > This documentation is reverse-engineered from observed API traffic of the Hevy workout tracking app (Android client). It covers the internal/private API, not the official public API.
 
@@ -139,8 +143,8 @@ Logs out the current user and invalidates the session.
 | Header | Value | Description |
 |--------|-------|-------------|
 | `x-api-key` | `<app api key>` | Static string compiled into the client, same for every user. Not printed here; read it out of the app bundle. |
-| `hevy-app-version` | `2.5.11` | App version string |
-| `hevy-app-build` | `1885982` | App build number |
+| `hevy-app-version` | `3.1.11` | App version string |
+| `hevy-app-build` | `3265149` | App build number |
 | `hevy-platform` | `android 34` | Platform identifier (format: `{os} {api_level}`) |
 | `authorization` | `Bearer {access_token}` | Bearer authentication token |
 | `auth-token` | `{uuid}` | Session auth token (UUID format) |
@@ -162,6 +166,43 @@ Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
 
 ---
 
+## 1c. Added in 3.x (observed in the 3.1.11 bundle)
+
+These strings are new in 3.1.11 versus 2.5.11. They come from the Hermes string
+table, which holds every path and field name but not the HTTP method or the request
+shape, so treat methods and nesting as unverified until watched on the wire.
+
+### Gyms and workout location
+
+The app gained gym tagging: a workout can be linked to a gym, and a gym has a place
+with coordinates. None of this is in the v1 public API, checked against the live
+OpenAPI spec, so it is internal-only as of this build.
+
+- Endpoints (relative paths, as the internal API names them): `gyms/search`,
+  `gyms/popular`, `gyms/visited`
+- New fields: `gym_id`, `place_id`, `latitude`, `longitude`, `coordinate`,
+  `coordinates`, `home_gym`, `user_gym`, `garage_gym`, `gyms_profile`
+- Gympass integration: `link_with_gympass`
+
+### Hevy Trainer v3
+
+- `hevy_trainer/v3/program`, `hevy_trainer/v3/migrate`
+- New field `trainer_workout_template_id`
+
+### Auth
+
+- `auth/create_linked_session`, a new call alongside `/login` and
+  `/login_with_saved_account`.
+
+### Billing is RevenueCat, not Hevy
+
+3.1.11 bundles RevenueCat's billing SDK. The strings `checkout.*`, `/rcbilling/v1`,
+`/v1/subscribers`, `/v1/receipts`, `/v1/events` and `revenuecat_user_id` belong to
+`api.revenuecat.com`, not to Hevy. Subscription state originates at RevenueCat and
+Hevy mirrors it through `/user_subscription`, consistent with 2.x.
+
+---
+
 ## 2b. Worked example: log in and write a routine
 
 Every request carries the app headers. An authenticated one adds two credentials,
@@ -173,8 +214,8 @@ client key, which is described in the header table above.
 ```bash
 curl -s https://api.hevyapp.com/login \
   -H 'x-api-key: <app api key>' \
-  -H 'hevy-app-version: 2.5.11' \
-  -H 'hevy-app-build: 1885982' \
+  -H 'hevy-app-version: 3.1.11' \
+  -H 'hevy-app-build: 3265149' \
   -H 'hevy-platform: android 34' \
   -H 'accept: application/json, text/plain, */*' \
   -H 'content-type: application/json; charset=utf-8' \
@@ -192,8 +233,8 @@ object, which is how the app re-authenticates without storing a password.
 ```bash
 curl -s https://api.hevyapp.com/user/account \
   -H 'x-api-key: <app api key>' \
-  -H 'hevy-app-version: 2.5.11' \
-  -H 'hevy-app-build: 1885982' \
+  -H 'hevy-app-version: 3.1.11' \
+  -H 'hevy-app-build: 3265149' \
   -H 'hevy-platform: android 34' \
   -H "authorization: Bearer $ACCESS_TOKEN" \
   -H "auth-token: $AUTH_TOKEN" \
@@ -208,7 +249,7 @@ The client generates the id and the server echoes it back.
 ID=$(uuidgen | tr 'A-Z' 'a-z')
 curl -s https://api.hevyapp.com/routine \
   -H 'x-api-key: <app api key>' \
-  -H 'hevy-app-version: 2.5.11' -H 'hevy-app-build: 1885982' \
+  -H 'hevy-app-version: 3.1.11' -H 'hevy-app-build: 3265149' \
   -H 'hevy-platform: android 34' \
   -H "authorization: Bearer $ACCESS_TOKEN" -H "auth-token: $AUTH_TOKEN" \
   -H 'content-type: application/json; charset=utf-8' \
@@ -227,7 +268,7 @@ Response: `{"routineId": "<the id you sent>"}`.
 ```bash
 curl -s https://api.hevyapp.com/auth/refresh_token \
   -H 'x-api-key: <app api key>' \
-  -H 'hevy-app-version: 2.5.11' -H 'hevy-app-build: 1885982' \
+  -H 'hevy-app-version: 3.1.11' -H 'hevy-app-build: 3265149' \
   -H 'hevy-platform: android 34' \
   -H "authorization: Bearer $ACCESS_TOKEN" -H "auth-token: $AUTH_TOKEN" \
   -H 'content-type: application/json; charset=utf-8' \
@@ -1099,7 +1140,7 @@ Sends device and user metadata to the server.
   "appLanguage": "en",
   "platform": "android",
   "platformVersion": "34",
-  "appVersion": "2.5.11 - (1885982)",
+  "appVersion": "3.1.11 - (3265149)",
   "securityId": "1771043426:daabfb41-...:9e601d92aa00c0aa",
   "googleAdId": "7fc3adcc-30cd-4a15-a9a3-8040e8a28f1a",
   "adjustAdId": "de78481ba67acb7c1b8a831dc198b0b7"
