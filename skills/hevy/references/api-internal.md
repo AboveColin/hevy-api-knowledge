@@ -26,6 +26,7 @@ the Hevy API and neither is documented here.
 
 1. [Authentication](#1-authentication)
 2. [Common Headers](#2-common-headers)
+3. [Worked example: log in and write a routine](#2b-worked-example-log-in-and-write-a-routine)
 3. [User Account & Profile](#3-user-account--profile)
 4. [User Preferences](#4-user-preferences)
 5. [Workouts](#5-workouts)
@@ -158,6 +159,97 @@ The API supports ETags for conditional requests:
 Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, x-api-key, auth-token, session-token, temp-auth-token, Authorization, Hevy-App-Version, Hevy-App-Build, Hevy-Platform
 Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
 ```
+
+---
+
+## 2b. Worked example: log in and write a routine
+
+Every request carries the app headers. An authenticated one adds two credentials,
+the bearer and the session `auth-token`. Replace `<app api key>` with the static
+client key, which is described in the header table above.
+
+### Log in
+
+```bash
+curl -s https://api.hevyapp.com/login \
+  -H 'x-api-key: <app api key>' \
+  -H 'hevy-app-version: 2.5.11' \
+  -H 'hevy-app-build: 1885982' \
+  -H 'hevy-platform: android 34' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'content-type: application/json; charset=utf-8' \
+  -d '{"emailOrUsername":"user@example.com","password":"...","useAuth2_0":true}'
+```
+
+Returns `auth_token`, `user_id`, `access_token`, `refresh_token` and `expires_at`.
+The access token lasts about 15 minutes.
+
+`POST /login_with_saved_account` takes `{"userId","secret"}` and returns the same
+object, which is how the app re-authenticates without storing a password.
+
+### Call an authenticated endpoint
+
+```bash
+curl -s https://api.hevyapp.com/user/account \
+  -H 'x-api-key: <app api key>' \
+  -H 'hevy-app-version: 2.5.11' \
+  -H 'hevy-app-build: 1885982' \
+  -H 'hevy-platform: android 34' \
+  -H "authorization: Bearer $ACCESS_TOKEN" \
+  -H "auth-token: $AUTH_TOKEN" \
+  -H 'accept: application/json, text/plain, */*'
+```
+
+### Create a routine
+
+The client generates the id and the server echoes it back.
+
+```bash
+ID=$(uuidgen | tr 'A-Z' 'a-z')
+curl -s https://api.hevyapp.com/routine \
+  -H 'x-api-key: <app api key>' \
+  -H 'hevy-app-version: 2.5.11' -H 'hevy-app-build: 1885982' \
+  -H 'hevy-platform: android 34' \
+  -H "authorization: Bearer $ACCESS_TOKEN" -H "auth-token: $AUTH_TOKEN" \
+  -H 'content-type: application/json; charset=utf-8' \
+  -d "{\"routine\":{\"title\":\"Upper A\",\"folder_id\":null,\"index\":-1,
+       \"program_id\":null,\"notes\":null,
+       \"clientId\":\"$ID\",\"_unsyncedObjectId\":\"$ID\",
+       \"exercises\":[{\"exercise_template_id\":\"79D0BB3A\",\"notes\":\"\",
+         \"rest_seconds\":150,
+         \"sets\":[{\"index\":0,\"indicator\":\"normal\",\"weight_kg\":60,\"reps\":8}]}]}}"
+```
+
+Response: `{"routineId": "<the id you sent>"}`.
+
+### Refresh
+
+```bash
+curl -s https://api.hevyapp.com/auth/refresh_token \
+  -H 'x-api-key: <app api key>' \
+  -H 'hevy-app-version: 2.5.11' -H 'hevy-app-build: 1885982' \
+  -H 'hevy-platform: android 34' \
+  -H "authorization: Bearer $ACCESS_TOKEN" -H "auth-token: $AUTH_TOKEN" \
+  -H 'content-type: application/json; charset=utf-8' \
+  -d "{\"refresh_token\":\"$REFRESH_TOKEN\"}"
+```
+
+Both tokens rotate. Store the new `refresh_token` or the next refresh fails.
+
+### Four things that bite
+
+`hevy-platform` is `{os} {api_level}` with a space, so `android 34`, not `android34`.
+
+The web flow is a different shape: its own web api key, `hevy-platform: web`, and
+**no `auth-token` header at all**. Sending the Android key with `hevy-platform: web`
+is not a valid combination.
+
+`POST /login` can demand a `recaptchaToken` when the `enable_login_recaptcha`
+feature flag is on for that account. There is no way to know in advance.
+
+The access token expires in roughly 15 minutes, which is short enough that any
+script running longer than a single call needs refresh handling rather than a
+token pasted into an environment variable.
 
 ---
 
