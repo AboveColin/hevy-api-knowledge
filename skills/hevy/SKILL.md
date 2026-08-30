@@ -17,7 +17,8 @@ reference: `references/api-v1.md`.
 username and password login, and carries the social side that v1 omits: the feed,
 likes, comments, follows, notifications, subscription state and feature flags. It
 is reverse-engineered from app traffic, so it changes without notice and Hevy
-makes no promises about it. Reference: `references/api-internal.md`.
+makes no promises about it. Reference: `references/api-internal.md`, which includes
+a worked login-to-routine-write example with the exact headers.
 
 Start with v1. Reach for the internal API only when v1 has no equivalent.
 
