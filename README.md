@@ -70,6 +70,13 @@ This is an unofficial community reference. Hevy's published API is version 0.0.1
 their own docs warn that the structure may change or the project may be dropped.
 Nothing here is a promise that any of it still works.
 
+## Supporting the project
+
+This project is free and stays free. If it is useful to you, you can support its
+development through [GitHub Sponsors](https://github.com/sponsors/AboveColin).
+Sponsorship is voluntary and unlocks nothing: every feature, fix and security
+update ships in the public release.
+
 ## Licence
 
 MIT.
